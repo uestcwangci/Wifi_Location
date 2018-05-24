@@ -107,8 +107,8 @@ for iTest in test_s:
 # 读入测试数据
 ######################################################################
 filename = 'mnist_test_labels.mat'  # raw_input() # 换成raw_input()可自由输入文件名
-testlabel = sio.loadmat(filename)
-test_l = testlabel["mnist_test_labels"]
+test_label = sio.loadmat(filename)
+test_l = test_label["mnist_test_labels"]
 right = np.zeros(out_num)  # 对应位置准确率
 numbers = np.zeros(out_num)  # 存放对应位置label的个数
 #######################################################################
