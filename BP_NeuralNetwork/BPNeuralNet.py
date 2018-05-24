@@ -6,12 +6,12 @@ import scipy.io as sio
 import os
 
 # 获取文件夹路径
-AP_path = os.path.abspath('..\\AP_Filter')
+AP_path = os.path.abspath('..\\AP_Filter\\')
 cur_path = os.getcwd()
 
 # 读入训练数据
 ################################################################################################
-filename = AP_path + '\\AP_train.mat'     # raw_input() # 换成raw_input()可自由输入文件名
+filename = AP_path + 'AP_train.mat'     # raw_input() # 换成raw_input()可自由输入文件名
 sample = sio.loadmat(filename)
 sample = sample["x_train"].tolist()
 # 特征向量归一化
@@ -23,7 +23,7 @@ for iSample in sample:
             iSample[count] = iSample[count] / 255
 
 print(sample)
-filename = AP_path + '\\label_train.mat'   # raw_input() # 换成raw_input()可自由输入文件名
+filename = AP_path + 'label_train.mat'   # raw_input() # 换成raw_input()可自由输入文件名
 label = sio.loadmat(filename)
 label = label["y_train"]
 
@@ -93,9 +93,9 @@ for count in range(0, samp_num):
 
 # 测试网络
 ###################################################################################################
-filename = 'mnist_test.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+filename = AP_path + 'AP_test.mat'  # raw_input() # 换成raw_input()可自由输入文件名
 test = sio.loadmat(filename)
-test_s = test["mnist_test"].tolist()
+test_s = test["x_test"].tolist()
 # 特征向量归一化
 for iTest in test_s:
     for count in range(len(iTest)):
@@ -106,9 +106,9 @@ for iTest in test_s:
 
 # 读入测试数据
 ######################################################################
-filename = 'mnist_test_labels.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+filename = AP_path + 'label_test.mat'  # raw_input() # 换成raw_input()可自由输入文件名
 test_label = sio.loadmat(filename)
-test_l = test_label["mnist_test_labels"]
+test_l = test_label["y_test"]
 right = np.zeros(out_num)  # 对应位置准确率
 numbers = np.zeros(out_num)  # 存放对应位置label的个数
 #######################################################################
