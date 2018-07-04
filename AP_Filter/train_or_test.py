@@ -4,19 +4,19 @@ import scipy.io as sio
 
 
 # 读取数据
-sample_x = sio.loadmat('x_set.mat')
-sample_x = sample_x['x_set'].tolist()
+sample_x = sio.loadmat('x_set_5.mat')
+sample_x = sample_x['x_set_5'].tolist()
 
-sample_y = sio.loadmat('y_set.mat')
-sample_y = sample_y['y_set'].tolist()
+sample_y = sio.loadmat('y_set_5.mat')
+sample_y = sample_y['y_set_5'].tolist()
 
 # 把每个坐标对应有多少数据存储下来
-loc_max = max(sample_y)[0] - 2
+loc_max = max(sample_y)[0]
 count_loc = [0] * loc_max  # 列表，每处值表示每个坐标含有多少个数据集
 for iSample in sample_y:
-    if iSample[0] >= 42:
-        iSample[0] = iSample[0] - 2
-    count_loc[iSample[0] - 1] = count_loc[iSample[0] - 1] + 1
+    # if iSample[0] >= 42:
+    #     iSample[0] = iSample[0] - 2
+    count_loc[iSample[0] - 1] += 1
 
 
 def split_data(count_data, features, labels):

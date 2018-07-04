@@ -2,6 +2,7 @@
   <dictionary name="dell">
     <words>
       <w>rssi</w>
+      <w>ssid</w>
     </words>
   </dictionary>
 </component>

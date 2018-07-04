@@ -12,14 +12,17 @@ MAX_AP = glovar.MAX_AP
 # 获取文件夹路径
 AP_path = os.path.abspath('..\\mat_data')
 cur_path = os.getcwd()
-right_rate = []
+right_rate = []  # 保存所有AP，隐藏层及其对应的准确率
+top_right = ['Input', 'Hide', 'Out', 'AP', '0.0']  # 保存最大准确率,及其对应的AP数,隐藏层数
+
+
 for iAP in range(MIN_AP, MAX_AP + 1):
     # 读入训练数据
     ################################################################################################
     # 读入特征值训练集
-    filename = AP_path + '\\x_train_AP' + str(iAP) + '.mat'
+    filename = AP_path + '\\x_train_random_AP' + str(iAP) + '.mat'
     sample = sio.loadmat(filename)
-    sample = sample['x_train_AP' + str(iAP)].tolist()
+    sample = sample['x_train_random_AP' + str(iAP)].tolist()
     # 特征向量归一化
     for iSample in sample:
         for count in range(len(iSample)):
@@ -29,19 +32,19 @@ for iAP in range(MIN_AP, MAX_AP + 1):
                 iSample[count] /= 255.0
     sample = np.array(sample)
     # 读入标签训练集
-    filename = AP_path + '\\y_train.mat'
+    filename = AP_path + '\\y_train_random.mat'
     label = sio.loadmat(filename)
-    label = label['y_train'] - 1
-    ##################################################################################################
+    label = label['y_train_random'] - 1
 
-    for hid_num in range(10, 20):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m为输入结点数，n为输出结点数，a为1~10整数
+    for hid_num in range(23, 25):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m为输入结点数，n为输出结点数，a为1~10整数
         ##################################################################################################
         # 神经网络配置
         samp_num = len(label)  # 样本总数
         inp_num = len(sample[0])  # 输入层节点数
-        out_num = 43  # 输出节点数
+        out_num = 9  # 输出节点数
         w1 = 0.2 * np.random.random((inp_num, hid_num)) - 0.1  # 初始化输入层权矩阵
         w2 = 0.2 * np.random.random((hid_num, out_num)) - 0.1  # 初始化隐层权矩阵
+        top_w1 = w1.copy()
         hid_offset = np.zeros(hid_num)  # 隐层偏置向量
         out_offset = np.zeros(out_num)  # 输出层偏置向量
         inp_lrate = 0.3  # 输入层权值学习率
@@ -97,12 +100,11 @@ for iAP in range(MIN_AP, MAX_AP + 1):
         # 测试网络
         ###################################################################################################
         # 保存不同AP，不同隐藏层平均准且率
-
         right_temp = []
         # 读入特征测试集
-        filename = AP_path + '\\x_test_AP' + str(iAP) + '.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+        filename = AP_path + '\\x_test_random_AP' + str(iAP) + '.mat'  # raw_input() # 换成raw_input()可自由输入文件名
         test = sio.loadmat(filename)
-        test_s = test['x_test_AP' + str(iAP)].tolist()
+        test_s = test['x_test_random_AP' + str(iAP)].tolist()
         # 特征向量归一化
         for iTest in test_s:
             for count in range(len(iTest)):
@@ -112,9 +114,9 @@ for iAP in range(MIN_AP, MAX_AP + 1):
                     iTest[count] /= 255.0
         test_s = np.array(test_s)
         # 读入标签测试集
-        filename = AP_path + '\\y_test.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+        filename = AP_path + '\\y_test_random.mat'  # raw_input() # 换成raw_input()可自由输入文件名
         test_label = sio.loadmat(filename)
-        test_l = test_label['y_test'] - 1
+        test_l = test_label['y_test_random'] - 1
 
         right = np.zeros(out_num)  # 对应位置准确率
         numbers = np.zeros(out_num)  # 存放对应位置label的个数
@@ -143,41 +145,50 @@ for iAP in range(MIN_AP, MAX_AP + 1):
         print('准确率均值: ')
         average = sum_right/len(test_s)
         print(average)
-        right_temp.append('Hide:' + str(hid_num))
-        right_temp.append('AP:' + str(iAP))
+
+        right_temp.append('Hide:%2s' % str(hid_num))
+        right_temp.append('AP:%2s' % str(iAP))
         right_temp.append('Rate:' + str(average))
         right_rate.append(right_temp)
         right_temp = []
-###################################################################################################
-# 输出网络
-###################################################################################################
-# Network = open("MyNetWork.txt", 'w')
-# Network.write(str(inp_num))
-# Network.write('\n')
-# Network.write(str(hid_num))
-# Network.write('\n')
-# Network.write(str(out_num))
-# Network.write('\n')
-# for i in w1:
-#     for j in i:
-#         Network.write(str(j))
-#         Network.write(' ')
-#     Network.write('\n')
-# Network.write('\n')
-#
-# for i in w2:
-#     for j in i:
-#         Network.write(str(j))
-#         Network.write(' ')
-# Network.write('\n')
-#
-# Network.close()
+
+        if str(average) > str(top_right[-1]):
+            ###################################################################################################
+            # 输出网络
+            ###################################################################################################
+            Network = open("MyNetWork.txt", 'w')
+            top_right.clear()
+            top_right.append('Input:%3s' % str(inp_num))
+            top_right.append('Hide:%2s' % str(hid_num))
+            top_right.append('Out:%2s' % str(out_num))
+            top_right.append('AP:%2s' % str(iAP))
+            top_right.append(str(average))
+            for iTop in top_right:
+                Network.write(iTop)
+                Network.write(' | ')
+            Network.write('\n')
+            for i in w1:
+                for j in i:
+                    Network.write(str(j))
+                    Network.write(' ')
+                Network.write('\n')
+            Network.write('\n')
+            for i in w2:
+                for j in i:
+                    Network.write(str(j))
+                    Network.write(' ')
+            Network.write('\n')
+            Network.close()
 ###################################################################################################
 # 输出结果
 ###################################################################################################
-Network = open('AccuracyRate.txt', 'w')
+Accuracy = open('AccuracyRate.txt', 'w')
+
 for iRate in right_rate:
     string_rate = ' | '.join(iRate)
-    Network.write(string_rate)
-    Network.write('\n')
-Network.close()
+    Accuracy.write(string_rate)
+    Accuracy.write('\n')
+
+Accuracy.close()
+
+
