@@ -40,14 +40,14 @@ def split_data(count_data, features, labels):
 
         foot = foot + loc_num - temp    # 起始位置 = 上一个切片的起始位置 + 对应位置总数据个数 - 删去的测试的个数
 
-    sio.savemat('x_test.mat', {'x_test': x_test})
-    sio.savemat('x_train.mat', {'x_train': features})
-    sio.savemat('y_test.mat', {'y_test': y_test})
-    sio.savemat('y_train.mat', {'y_train': labels})
+    sio.savemat('x_test_rssi.mat', {'x_test_rssi': x_test})
+    sio.savemat('x_train_rssi.mat', {'x_train_rssi': features})
+    sio.savemat('y_test_rssi.mat', {'y_test_rssi': y_test})
+    sio.savemat('y_train_rssi.mat', {'y_train_rssi': labels})
     print("Split successfully")
 
 
 split_data(count_loc, sample_x, sample_y)
 
-print('########## 4 ##########')
+print('########## 3 ##########')
 

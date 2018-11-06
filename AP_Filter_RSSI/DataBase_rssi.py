@@ -12,11 +12,11 @@ Data_path = os.path.abspath('..\\DataBase')
 
 MIN_AP = glovar.MIN_AP  # 采用最小AP数
 MAX_AP = glovar.MAX_AP  # 采用最大AP数
-FILE_NUM = 2  # 需要载入的数据库数量
+FILE_NUM = 1  # 需要载入的数据库数量
 for num_file in range(FILE_NUM):
     # 根据需要录入的文件总数读取数据库数据
     if num_file == 0:
-        DatabaseName = 'myTest_180613_0'
+        DatabaseName = 'myTest5'
     elif num_file == 1:
         DatabaseName = 'myTest_180613_1'
     else:
@@ -24,7 +24,7 @@ for num_file in range(FILE_NUM):
     # Sqlite3连接
     conn = sq.connect(Data_path + '\\' + DatabaseName + '.db')  # 连接数据库
     cursor = conn.cursor()
-    print('Open database successfully')
+    # print('Open database successfully')
     # x存储MAC以及RSSI    y存储label值
     x_train = []
     y_train = []
@@ -33,45 +33,54 @@ for num_file in range(FILE_NUM):
     for num_AP in range(MAX_AP):
         choose_AP.append('AP' + str(num_AP + 1))
     AP_str = ','.join(choose_AP)
-    AP_str.rstrip(',')
 
-    selected = cursor.execute('SELECT Id,' + AP_str + ' FROM stu_table')  # 读取数据库数据
-
+    selected = cursor.execute('SELECT Id,' + AP_str + ',Date FROM main.stu_table')  # 读取数据库数据
     # 正则初始化
-    pattern1 = re.compile(r"MAC2='(\d+):(\d+):(\d+):(\d+):(\d+):(\d+)'")  # 用于匹配MAC地址
-    pattern2 = re.compile(r"level2=(-\d+)")  # 用于匹配RSSI
-    pattern3 = re.compile(r'(\d+),(\d+),(\d+),(\d+)')  # 用于匹配id，对应坐标值
-
+    MAC_regex = re.compile(r"MAC = '(\w+:\w+:\w+:\w+:\w+:\w+)'")  # 用于匹配MAC地址
+    RSSI_regex = re.compile(r"level = (-\d+)")  # 用于匹配RSSI
+    Loc_regex = re.compile(r'(\d+),(\d+)')  # 用于匹配id，对应坐标值
+    Date_regex = re.compile(r'(\d+-\d+-\d+)')  # 用于匹配日期
+    Name_regex = re.compile(r"Name = '(\w+)'")
+    #######################################################################
     # 过滤数据
+    x_last = []
+    y_last = []
     for row in selected:
+        # 循环开始时初始化列表
         x_temp = []
         y_temp = []
-        Location = pattern3.search(row[0])
-        # 能找到坐标，且过滤x为0的点
-        if Location and Location.group(1) != '0':
+        Location = Loc_regex.search(row[0])
+        date = Date_regex.search(row[-1])
+        # 能找到坐标，且过滤x为0的点,或首个RSSI为-100dBm的点
+        if Location and Location.group(1) != '0' and RSSI_regex.search(row[1]).group(1) != '-100':
             y_temp.append(int(Location.group(1)))
             # 每次循环放入1个AP
             for i in range(MAX_AP):
-                MAC = pattern1.search(row[i + 1])
-                RSSI = pattern2.search(row[i + 1])
+                MAC = MAC_regex.search(row[i + 1])
+                RSSI = RSSI_regex.search(row[i + 1])
                 if MAC and RSSI:
                     x_temp.append(int(RSSI.group(1)))
                     for j in range(len(MAC.groups())):
                         x_temp.append(int(MAC.group(j + 1)))
-                # 纵坐标中0表示训练集，1表示测试集
-            if Location.group(2) == '0' or Location.group(2) == '1':
-                y_train.append(y_temp)
-                x_train.append(x_temp)
-                x_temp = []  # 清空列表
-                y_temp = []
+
+            # 当下一个坐标与上一个不同，MAC及RSSI与上一个相同时，过滤此次信息
+            if y_temp != y_last and x_temp == x_last:
+                pass
+            else:
+                x_last = x_temp.copy()
+                y_last = y_temp.copy()
+                # 根据标识符分类
+                if Location.group(2) == '5':
+                    y_train.append(y_temp)
+                    x_train.append(x_temp)
 
                 # elif Location.group(2) == '1':
                 #     y_test.append(y_temp)
                 #     x_test.append(x_temp)
                 #     x_temp = []
                 #     y_temp = []
-            else:
-                pass
+                else:
+                    pass
 
     # 保存数据
     ######################################################
@@ -95,5 +104,7 @@ for num_file in range(FILE_NUM):
 
     cursor.close()
     conn.close()
-    print('Close file')
+    # print('Close file')
+print('Database out')
 print('########## 1 ##########')
+

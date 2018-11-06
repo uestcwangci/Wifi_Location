@@ -39,10 +39,11 @@ AP_str = ','.join(choose_AP)
 
 selected = cursor.execute('SELECT Id,' + AP_str + ',Date FROM main.stu_table')  # 读取数据库数据
 # 正则初始化
-MAC_regex = re.compile(r"MAC='(\d+:\d+:\d+:\d+:\d+:\d+)'")  # 用于匹配MAC地址
-RSSI_regex = re.compile(r"level=(-\d+)")  # 用于匹配RSSI
+MAC_regex = re.compile(r"MAC = '(\w+:\w+:\w+:\w+:\w+:\w+)'")  # 用于匹配MAC地址
+RSSI_regex = re.compile(r"level = (-\d+)")  # 用于匹配RSSI
 Loc_regex = re.compile(r'(\d+),(\d+)')  # 用于匹配id，对应坐标值
-Date_regex = re.compile(r'(\d+)-(\d+)-(\d+)')  # 用于匹配日期
+Date_regex = re.compile(r'(\d+-\d+-\d+)')  # 用于匹配日期
+Name_regex = re.compile(r"Name = '(\w+)'")
 #######################################################################
 # 过滤数据
 x_last = init_x.copy()
@@ -93,11 +94,11 @@ for row in selected:
 # 保存数据
 ######################################################
 x_train_array = np.array(x_train)
-sio.savemat('x_rssi_' + DatabaseName.lstrip('myTest_') + '.mat',
-            {'x_rssi_' + DatabaseName.lstrip('myTest_'): x_train_array})
+sio.savemat('x_form_' + DatabaseName.lstrip('myTest_') + '.mat',
+            {'x_form_' + DatabaseName.lstrip('myTest_'): x_train_array})
 y_train_array = np.array(y_train)
-sio.savemat('y_rssi_' + DatabaseName.lstrip('myTest_') + '.mat',
-            {'y_rssi_' + DatabaseName.lstrip('myTest_'): y_train_array})
+sio.savemat('y_form_' + DatabaseName.lstrip('myTest_') + '.mat',
+            {'y_form_' + DatabaseName.lstrip('myTest_'): y_train_array})
 
 # print('Save set successfully')
 # for rAP in reversed(range(MIN_AP, MAX_AP + 1)):

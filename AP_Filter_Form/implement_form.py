@@ -1,6 +1,6 @@
 import os
 
-os.system('python .\\FindAllSSID.py')
+os.system('python .\\FindAllMac.py')
 os.system('python .\\arrangeAP.py')
 # os.system('python .\\combine.py')
 os.system('python .\\train_or_test.py')

@@ -4,11 +4,11 @@ import scipy.io as sio
 
 
 # 读取数据
-sample_x = sio.loadmat('x_rssi_5.mat')
-sample_x = sample_x['x_rssi_5'].tolist()
+sample_x = sio.loadmat('x_form_5.mat')
+sample_x = sample_x['x_form_5'].tolist()
 
-sample_y = sio.loadmat('y_rssi_5.mat')
-sample_y = sample_y['y_rssi_5'].tolist()
+sample_y = sio.loadmat('y_form_5.mat')
+sample_y = sample_y['y_form_5'].tolist()
 
 # 把每个坐标对应有多少数据存储下来
 loc_max = max(sample_y)[0]
@@ -40,10 +40,10 @@ def split_data(count_data, features, labels):
 
         foot = foot + loc_num - temp    # 起始位置 = 上一个切片的起始位置 + 对应位置总数据个数 - 删去的测试的个数
 
-    sio.savemat('x_test.mat', {'x_test': x_test})
-    sio.savemat('x_train.mat', {'x_train': features})
-    sio.savemat('y_test.mat', {'y_test': y_test})
-    sio.savemat('y_train.mat', {'y_train': labels})
+    sio.savemat('x_test_form.mat', {'x_test_form': x_test})
+    sio.savemat('x_train_form.mat', {'x_train_form': features})
+    sio.savemat('y_test_form.mat', {'y_test_form': y_test})
+    sio.savemat('y_train_form.mat', {'y_train_form': labels})
     print("Split train or test")
 
 

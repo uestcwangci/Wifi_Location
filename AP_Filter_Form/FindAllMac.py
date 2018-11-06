@@ -38,11 +38,11 @@ for num_file in range(FILE_NUM):
     AP_str = ','.join(choose_AP)
     selected = cursor.execute('SELECT Id,' + AP_str + ',Date FROM stu_table')  # 读取数据库数据
     # 正则初始化
-    MAC_regex = re.compile(r"MAC='(\d+:\d+:\d+:\d+:\d+:\d+)'")  # 用于匹配MAC地址
-    RSSI_regex = re.compile(r"level=(-\d+)")  # 用于匹配RSSI
+    MAC_regex = re.compile(r"MAC = '(\w+:\w+:\w+:\w+:\w+:\w+)'")  # 用于匹配MAC地址
+    RSSI_regex = re.compile(r"level = (-\d+)")  # 用于匹配RSSI
     Loc_regex = re.compile(r'(\d+),(\d+)')  # 用于匹配id，对应坐标值
-    Date_regex = re.compile(r'(\d+)-(\d+)-(\d+)')  # 用于匹配日期
-    SSID_regex = re.compile(r"SSID='(\w+)'")
+    Date_regex = re.compile(r'(\d+-\d+-\d+)')  # 用于匹配日期
+    Name_regex = re.compile(r"Name = '(\w+)'")
     #######################################################################
     # 过滤数据
     # 每次遍历放入的是一行采样数据
@@ -71,8 +71,9 @@ for num_file in range(FILE_NUM):
         iMac = iMac.replace(':', ' ')
         # iMacList = iMac.split(':')
         MacList.append(iMac)
-    print(MacList)
-    print(allAP)
+    # print(MacList)
+    # print(allAP)
+
     ######################################################
     # 功能：将一字典写入到csv文件中
     # 输入：文件名称，数据字典
@@ -82,7 +83,7 @@ for num_file in range(FILE_NUM):
         idd = 1
         with open(filename, 'w', newline='') as csvFile:
             csvWriter = csv.writer(csvFile)
-            csvWriter.writerow(['ID', 'MAC', 'SSID'])
+            csvWriter.writerow(['ID', 'MAC', 'Name'])
             for k, v in datadict.items():
                 csvWriter.writerow([idd, k, v])
                 idd += 1

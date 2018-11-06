@@ -4,41 +4,44 @@ import math
 import numpy as np
 import scipy.io as sio
 import os
+import random
 
 # 获取文件夹路径
-mat_path = os.path.abspath('..\\mat_data')
+mat_path = os.path.abspath('..\\mat_data\\For5Loc')
 cur_path = os.getcwd()
 
 
 # 读入训练数据
 ################################################################################################
 # 读入特征值训练集
-filename = mat_path + '\\x_train_ssid.mat'
+filename = mat_path + '\\x_train_qu_r5Loc.mat'
 sample = sio.loadmat(filename)
-sample = sample['x_train_ssid'].astype('float32')
+sample = sample['x_train_qu_r5Loc'].astype('float32')
 # 特征向量归一化
-sample /= 100.0
+sample /= 10.0
 # sample = np.array(sample)
 # 读入标签训练集
-filename = mat_path + '\\y_train_ssid.mat'
+filename = mat_path + '\\y_train_qu_r5Loc.mat'
 label = sio.loadmat(filename)
-label = label['y_train_ssid'] - 1
+label = label['y_train_qu_r5Loc'] - 1
 # 保存数据结点数,隐藏结点，输出节点数，最大准确率,权值矩阵，偏置向量
 top_right = {'Input': 0, 'Hide': 0, 'Out': 0, 'Accuracy': 0.0, 'W1': [], 'W2': [], 'Hid_off': [], 'Out_off': []}
-
+right_rate = []  # 保存所有AP，隐藏层及其对应的准确率
+# epochs = 5000
+# patterns = max(label)
 
 for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m为输入结点数，n为输出结点数，a为1~10整数
     ##################################################################################################
     # 神经网络配置
     samp_num = len(label)  # 样本总数
     inp_num = len(sample[0])  # 输入层节点数
-    out_num = 9  # 输出节点数
+    out_num = 17  # 输出节点数
     w1 = 0.2 * np.random.random((inp_num, hid_num)) - 0.1  # 初始化输入层权矩阵
     w2 = 0.2 * np.random.random((hid_num, out_num)) - 0.1  # 初始化隐层权矩阵
     hid_offset = np.zeros(hid_num)  # 隐层偏置向量
     out_offset = np.zeros(out_num)  # 输出层偏置向量
-    inp_lrate = 0.6  # 输入层权值学习率
-    hid_lrate = 0.6  # 隐层学权值习率
+    inp_lrate = 0.3  # 输入层权值学习率
+    hid_lrate = 0.3  # 隐层学权值习率
     err_th = 0.01  # 学习误差门限
 
     ###################################################################################################
@@ -61,6 +64,12 @@ for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m�
 
     # 训练——可使用err_th与get_err() 配合，提前结束训练过程
     ###################################################################################################
+    # for iter in range(epochs):
+    #     patnum = round((random.random() * patterns) + 0.5)
+    #     if patnum > patterns:
+    #         patnum = patterns
+    #     elif patnum < 1:
+    #         patnum = 1
 
     for count in range(0, samp_num):
         # if count % 10000 == 0 and count != 0:
@@ -78,6 +87,9 @@ for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m�
         # if err_th > get_err(e):
         #     print(count)
         #     break
+        # 随机学习效率
+        # inp_lrate = random.uniform(0.2, 0.4)
+        # hid_lrate = random.uniform(0.2, 0.4)
         out_delta = e * out_act * (1-out_act)                                       # 输出层delta计算
         hid_delta = hid_act * (1-hid_act) * np.dot(w2, out_delta)  # 隐层delta计算
         for i in range(0, out_num):
@@ -92,17 +104,19 @@ for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m�
 
     # 测试网络
     ###################################################################################################
+    # 保存不同隐藏层平均准且率
+    right_temp = []
     # 读入特征测试集
-    filename = mat_path + '\\x_test_ssid.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+    filename = mat_path + '\\x_test_qu_r5Loc.mat'  # raw_input() # 换成raw_input()可自由输入文件名
     test = sio.loadmat(filename)
-    test_s = test['x_test_ssid'].astype('float32')
+    test_s = test['x_test_qu_r5Loc'].astype('float32')
     # 特征向量归一化
-    test_s /= 100.0
+    test_s /= 10.0
     # test_s = np.array(test_s)
     # 读入标签测试集
-    filename = mat_path + '\\y_test_ssid.mat'  # raw_input() # 换成raw_input()可自由输入文件名
+    filename = mat_path + '\\y_test_qu_r5Loc.mat'  # raw_input() # 换成raw_input()可自由输入文件名
     test_label = sio.loadmat(filename)
-    test_l = test_label['y_test_ssid'] - 1
+    test_l = test_label['y_test_qu_r5Loc'] - 1
 
     right = np.zeros(out_num)  # 对应位置准确率
     numbers = np.zeros(out_num)  # 存放对应位置label的个数
@@ -132,6 +146,11 @@ for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m�
     print('准确率均值: ' + str(average))
     # print(average)
 
+    right_temp.append('Hide:%2s' % str(hid_num))
+    right_temp.append('Rate:' + str(average))
+    right_rate.append(right_temp)
+    right_temp = []
+
     if average > top_right['Accuracy']:
         top_right['Input'] = inp_num
         top_right['Hide'] = hid_num
@@ -147,23 +166,23 @@ for hid_num in range(10, 30):   # 隐层节点数(经验公式) h=sqrt(m+n)+a m�
 ###################################################################################################
 def para_out(file):
     output = open(file, 'w')
-    if 'w1.txt' == file:
+    if 'w1_Qu5loc.txt' == file:
         for iW in top_right['W1']:
             for iw in iW:
                 output.write(str(iw))
                 output.write(' ')
             output.write('\n')
-    elif 'w2.txt' == file:
+    elif 'w2_Qu5loc.txt' == file:
         for iW in top_right['W2']:
             for iw in iW:
                 output.write(str(iw))
                 output.write(' ')
             output.write('\n')
-    elif 'hid_offset.txt' == file:
+    elif 'hid_offset_Qu5loc.txt' == file:
         for iSet in top_right['Hid_off']:
             output.write(str(iSet))
             output.write('\n')
-    elif 'out_offset.txt' == file:
+    elif 'out_offset_Qu5loc.txt' == file:
         for iSet in top_right['Out_off']:
             output.write(str(iSet))
             output.write('\n')
@@ -189,22 +208,26 @@ def para_out(file):
 
 # 输出结果
 ###################################################################################################
-Network = open("MyNetWork.txt", 'w')
+Network = open("NetWork_Qu5loc.txt", 'w')
 for key, value in top_right.items():
     if 'W1' == key:
-        Network.write('\n')
+        Network.write('\nw1:')
         for i in value:
             Network.write('\n')
             for j in i:
                 Network.write(str(j))
                 Network.write(' ')
     elif 'W2' == key:
-        Network.write('\n')
+        Network.write('\nw2:')
         for i in top_right['W2']:
             Network.write('\n')
             for j in i:
                 Network.write(str(j))
                 Network.write(' ')
+    elif 'Hid_off' == key or 'Out_off' == key:
+        Network.write('\n')
+        Network.write(key + ':\n')
+        Network.write(str(top_right[key]))
     else:
         Network.write(key)
         Network.write(':')
@@ -212,12 +235,22 @@ for key, value in top_right.items():
         Network.write(' | ')
 Network.close()
 ###################################################################################################
+para_out('w1_Qu5loc.txt')
+para_out('w2_Qu5loc.txt')
+para_out('hid_offset_Qu5loc.txt')
+para_out('out_offset_Qu5loc.txt')
 
 
-para_out('w1.txt')
-para_out('w2.txt')
-para_out('hid_offset.txt')
-para_out('out_offset.txt')
+# 输出分布结果
+###################################################################################################
+Accuracy = open('AccuracyRate_Qu5loc.txt', 'w')
+
+for iRate in right_rate:
+    string_rate = ' | '.join(iRate)
+    Accuracy.write(string_rate)
+    Accuracy.write('\n')
+
+Accuracy.close()
 print('Hide: %d, Accuracy %0.3f' % (top_right['Hide'], top_right['Accuracy']))
 
 

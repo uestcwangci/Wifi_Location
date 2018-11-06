@@ -20,7 +20,7 @@ def selectAP(data_set, data_name):
         print('Save ' + data_name + ' successfully | AP:%2i |' % rAP)
 
 
-def clean_dir (path):
+def clean_dir(path):
     # 判断路径是否存在
     # 存在     True
     # 不存在   False
@@ -42,21 +42,20 @@ def clean_dir (path):
 
 for i in range(2):
     if i == 0:
-        DataName = 'x_train_random'
+        DataName = 'x_train_rRssi'
         x_train = sio.loadmat(DataName + '.mat')[DataName].tolist()
         selectAP(x_train, DataName)
     elif i == 1:
-        DataName = 'x_test_random'
+        DataName = 'x_test_rRssi'
         x_train = sio.loadmat(DataName + '.mat')[DataName].tolist()
         selectAP(x_train, DataName)
-
 cur_path = os.getcwd()
-mat_path = os.path.abspath('..\\mat_data')
+mat_path = os.path.abspath('..\\mat_data\\ForRssi')
 clean_dir(mat_path)
 for iAP in range(MIN_AP, MAX_AP + 1):
-    shutil.move(cur_path + '\\x_train_random_AP' + str(iAP) + '.mat', mat_path)
-    shutil.move(cur_path + '\\x_test_random_AP' + str(iAP) + '.mat', mat_path)
-shutil.move(cur_path + '\\y_train_random.mat', mat_path)
-shutil.move(cur_path + '\\y_test_random.mat', mat_path)
+    shutil.move(cur_path + '\\x_train_rRssi_AP' + str(iAP) + '.mat', mat_path)
+    shutil.move(cur_path + '\\x_test_rRssi_AP' + str(iAP) + '.mat', mat_path)
+shutil.move(cur_path + '\\y_train_rRssi.mat', mat_path)
+shutil.move(cur_path + '\\y_test_rRssi.mat', mat_path)
 print('Move Successfully')
 print('########## 5 ##########')

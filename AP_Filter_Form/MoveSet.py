@@ -25,11 +25,11 @@ def clean_dir(path):
 
 
 cur_path = os.getcwd()
-mat_path = os.path.abspath('..\\mat_data')
+mat_path = os.path.abspath('..\\mat_data\\ForForm')
 clean_dir(mat_path)
-shutil.move(cur_path + '\\x_train_ssid.mat', mat_path)
-shutil.move(cur_path + '\\x_test_ssid.mat', mat_path)
-shutil.move(cur_path + '\\y_train_ssid.mat', mat_path)
-shutil.move(cur_path + '\\y_test_ssid.mat', mat_path)
+shutil.move(cur_path + '\\x_train_rForm.mat', mat_path)
+shutil.move(cur_path + '\\x_test_rForm.mat', mat_path)
+shutil.move(cur_path + '\\y_train_rForm.mat', mat_path)
+shutil.move(cur_path + '\\y_test_rForm.mat', mat_path)
 print('Move Successfully')
 print('########## 5 ##########')
