@@ -4,7 +4,6 @@ import math
 import numpy as np
 import scipy.io as sio
 import os
-import GlobalVarible.setter
 import GlobalVarible.getter as glovar
 
 MIN_AP = glovar.MIN_AP

@@ -39,8 +39,8 @@ for num_file in range(FILE_NUM):
     selected = cursor.execute('SELECT Id,' + AP_str + ' FROM wifi_table')  # 读取数据库数据
 
     # 正则初始化
-    pattern1 = re.compile(r"MAC='(\d+):(\d+):(\d+):(\d+):(\d+):(\d+)'")  # 用于匹配MAC地址
-    # pattern1 = re.compile(r"MAC='134:243:235:174:194:240'")  # 用于匹配MAC地址
+    # pattern1 = re.compile(r"MAC='(\d+):(\d+):(\d+):(\d+):(\d+):(\d+)'")  # 用于匹配MAC地址
+    pattern1 = re.compile(r"MAC='134:243:235:174:194:240'")  # 用于匹配MAC地址
     pattern2 = re.compile(r"level=(-\d+)")  # 用于匹配RSSI
     pattern3 = re.compile(r'(\d+),(\d+)')  # 用于匹配id，对应坐标值
 

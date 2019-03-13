@@ -17,18 +17,12 @@ def takeLastData(elem):
     return elem[-1]
 
 
-x_sample = sio.loadmat('x_set.mat')['x_set'].tolist()
-y_sample = sio.loadmat('y_set.mat')['y_set'].tolist()
-total = []
+total = sio.loadmat('total_2.mat')['total'].tolist()
 afterSort = []
-for data in x_sample:
-    data.append(y_sample[x_sample.index(data)][0])
-    total.append(data)
+
 total.sort(key=takeLastData)
 total_array = np.array(total)
-sio.savemat('10m.mat', {'total': total_array})
-sio.savemat('x_sort.mat', {'x_sort': total_array[:, 0:-1]})
-sio.savemat('y_sort.mat', {'y_sort': [[i] for i in total_array[:, -1].tolist()]})
+sio.savemat('total_2.mat', {'total': total_array})
 
 
 print('Sort done')

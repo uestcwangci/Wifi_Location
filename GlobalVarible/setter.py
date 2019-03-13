@@ -6,4 +6,5 @@ import GlobalVarible.globalvar as gl
 gl.__init__()
 gl.set_value('MIN_AP', 20)
 gl.set_value('MAX_AP', 25)
+gl.set_value('data_name', '4ESP8266')
 
